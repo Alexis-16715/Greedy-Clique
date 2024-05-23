@@ -1,8 +1,0 @@
-/**
- * 
- */
-/**
- * 
- */
-module Greedy_Clique {
-}
