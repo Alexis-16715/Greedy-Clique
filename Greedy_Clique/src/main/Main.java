@@ -27,11 +27,11 @@ public class Main {
         grafo.addEdge(4, 6);
         grafo.addEdge(5, 6);
 
-        Clique_Problem_Maximun test = new Clique_Problem_Maximun();
+        Clique_Problem_Maximun cliqueProblemMaximun = new Clique_Problem_Maximun();
 
-        Set<Vertex> clique = test.findCliqueMaxima(grafo);
+        Set<Vertex> clique = cliqueProblemMaximun.findCliqueMaxima(grafo);
 
-        int pesoTotal = clique.stream().mapToInt(n -> n.getWeight()).sum();
+        Integer pesoTotal = clique.stream().mapToInt(n -> n.getWeight()).sum();
         System.out.println("Clique de máximo peso encontrada: " + clique);
         System.out.println("Peso total: " + pesoTotal);
     }
