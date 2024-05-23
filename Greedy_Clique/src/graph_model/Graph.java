@@ -38,4 +38,8 @@ public class Graph {
         return new ArrayList<>(adjacencies.get(vertex.id));
     }
 
+    public Map<Integer, Set<Vertex>> getAdjacencies() {
+        return adjacencies;
+    }
+
 }

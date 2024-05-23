@@ -9,10 +9,17 @@ import graph_model.Graph;
 import graph_model.Vertex;
 
 public class Clique_Problem_Maximun {
+    private Set<Vertex> clique;
+
+    private PriorityQueue<Vertex> queuePriority;
+
+    public Clique_Problem_Maximun(){
+
+    }
 
     public Set<Vertex> findCliqueMaxima(Graph graph) {
-        Set<Vertex> clique = new HashSet<>();
-        PriorityQueue<Vertex> queuePriority = new PriorityQueue<>(Comparator.comparing(n -> -n.getWeight()));
+        clique = new HashSet<>();
+        queuePriority = new PriorityQueue<>(Comparator.comparing(n -> -n.getWeight()));
 
         queuePriority.addAll(graph.getVertex().values());
 
