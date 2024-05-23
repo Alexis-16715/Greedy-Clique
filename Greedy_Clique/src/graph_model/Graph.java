@@ -23,11 +23,11 @@ public class Graph {
         adjacencies.put(id, new HashSet<>());
     }
 
-    public void addEdge(int src, int dsc) {
-        Vertex nodo1 = vertex.get(src);
-        Vertex nodo2 = vertex.get(dsc);
-        adjacencies.get(src).add(nodo2);
-        adjacencies.get(dsc).add(nodo1);
+    public void addEdge(Integer src, Integer dsc) {
+        Vertex vertexSrc = vertex.get(src);
+        Vertex vertexDsc = vertex.get(dsc);
+        adjacencies.get(src).add(vertexDsc);
+        adjacencies.get(dsc).add(vertexSrc);
     }
 
     public Map<Integer, Vertex> getVertex() {
