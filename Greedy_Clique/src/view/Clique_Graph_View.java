@@ -3,8 +3,10 @@ package view;
 import java.awt.Dimension;
 
 import javax.swing.JPanel;
+import javax.swing.LayoutStyle;
 
 import com.mxgraph.layout.mxCircleLayout;
+import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.view.mxGraph;
 
@@ -26,7 +28,7 @@ public class Clique_Graph_View extends JPanel{
         this.height = height;
 
         initialize();
-        generatedMapPanel();
+        generatedGraphPanel();
     }
 
     private void initialize() {
@@ -36,11 +38,11 @@ public class Clique_Graph_View extends JPanel{
 
     }
 
-    private void generatedMapPanel() {
+    private void generatedGraphPanel() {
         panelGraph = new JPanel(new BorderLayout());
         positionPanelX = 20;
-        positionPanelY = -5;
-        panelGraph.setBounds(positionPanelX, positionPanelY, width/2, height);
+        positionPanelY = 5;
+        panelGraph.setBounds(positionPanelX, positionPanelY, width/2, height-10);
         panelGraph.setBackground(Color.GREEN);
 
         add(panelGraph);
@@ -48,14 +50,14 @@ public class Clique_Graph_View extends JPanel{
 
     public void testGraph(mxGraph graph) {
         mxGraphComponent graphComponent = new mxGraphComponent(graph);
+        graphComponent.setConnectable(false); //Esto es solo para deshabilitar la opcion de crear aristas haciendo click izquierdo
         
         panelGraph.add(graphComponent, BorderLayout.CENTER);
 
         mxCircleLayout layout = new mxCircleLayout(graph);
+        layout.setY0(50);
         layout.setRadius(Math.min((width/2) -50, height) / 2); // Ajusta el radio del layout para ocupar más espacio
         layout.execute(graph.getDefaultParent());
-        panelGraph.revalidate();
-        panelGraph.repaint();
 
         revalidate();
         repaint();

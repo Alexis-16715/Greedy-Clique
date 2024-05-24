@@ -36,6 +36,7 @@ public class Controller {
         grafo.addVertex(4, 7);
         grafo.addVertex(5, 3);
         grafo.addVertex(6, 4);
+        
 
         grafo.addEdge(1, 2);
         grafo.addEdge(1, 4);
@@ -52,6 +53,8 @@ public class Controller {
     }
 
     private void testGraphView(Graph graph) {
+
+        //Esto es para que se genere el grafo
         SimpleWeightedGraph<Vertex, DefaultEdge> jGraphTGraph = new SimpleWeightedGraph<>(DefaultEdge.class);
 
         for (Vertex vertexo : graph.getVertex().values()) {
