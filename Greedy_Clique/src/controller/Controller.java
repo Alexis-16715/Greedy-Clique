@@ -80,10 +80,10 @@ public class Controller {
         mxGraph.getModel().beginUpdate();
         try {
             Map<Vertex, Object> vertexMap = new HashMap<>();
-            for (Vertex vertexo : jGraphTGraph.vertexSet()) {
-                Object v = mxGraph.insertVertex(parent, null, vertexo.getId() + " (" + vertexo.getWeight() + ")", 0, 0, 50, 50,
-                        clique.contains(vertexo) ? "fillColor=yellow" : "fillColor=white");
-                vertexMap.put(vertexo, v);
+            for (Vertex vertexGraph : jGraphTGraph.vertexSet()) {
+                Object v = mxGraph.insertVertex(parent, null, vertexGraph.getId() + " (" + vertexGraph.getWeight() + ")", 0, 0, 50, 50,
+                        clique.contains(vertexGraph) ? "fillColor=yellow" : "fillColor=white");
+                vertexMap.put(vertexGraph, v);
             }
 
             for (DefaultEdge edge : jGraphTGraph.edgeSet()) {
