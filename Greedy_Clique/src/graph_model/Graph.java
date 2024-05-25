@@ -41,6 +41,14 @@ public class Graph {
         adjacencies.get(dsc).add(vertexSrc);
     }
 
+    public void deletedVertex(Integer id){
+        if(vertex.get(id) == null){
+            throw new IllegalArgumentException("El vertice " + id + " no existe");
+        }
+        vertex.remove(id);
+        adjacencies.remove(id);
+    }
+
     public Map<Integer, Vertex> getVertex() {
         return vertex;
     }
