@@ -1,8 +1,12 @@
 ﻿package controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.swing.JButton;
+import javax.swing.JComboBox;
 
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
@@ -20,12 +24,57 @@ public class Controller {
     private Clique_Graph_View cliqueGraphView;
     private Graph graph;
 
+
+    private JComboBox<Integer> vertexCountComboBox;
+    private JButton generateButtonForVertex;
+
+
+    private List<JComboBox<Integer>> listComboBoxWeight;
+    private JButton generateButtonForVertexWeight;
+
     public Controller(Main_View MainView, Clique_Graph_View cliqueGraphView, Graph graph){
         this.MainView=MainView;
         this.cliqueGraphView=cliqueGraphView;
         this.graph=graph;
+        attachListenersButton();
+        attachListenersButtonToLoadGraph();
         graph = testGraph();
-        testGraphView(graph);
+        makeTheGrap(graph);
+    }
+
+    private void attachListenersButton() {
+        vertexCountComboBox = cliqueGraphView.getVertexCountComboBox();
+
+        generateButtonForVertex = cliqueGraphView.getGenerateButtonForVertex();
+        generateButtonForVertex.addActionListener(e -> {
+            cliqueGraphView.generateAmmountVertex(vertexCountComboBox.getSelectedIndex()+1);
+            vertexCountComboBox.setEnabled(false);
+            generateButtonForVertex.setEnabled(false);
+            attachListenersButtonWeights();
+        });
+    }
+
+    private void attachListenersButtonWeights() {
+        listComboBoxWeight = cliqueGraphView.getListComboBoxWeight();
+        generateButtonForVertexWeight = cliqueGraphView.getGenerateButtonForVertexWeight();
+
+        generateButtonForVertexWeight.addActionListener(e -> {
+            for(int id = 0; id < listComboBoxWeight.size(); id++){
+                graph.addVertex(id+1, listComboBoxWeight.get(id).getSelectedIndex()+1);
+                listComboBoxWeight.get(id).setEnabled(false);
+            }
+            generateButtonForVertexWeight.setEnabled(false);
+            cliqueGraphView.generateConnectionEdges();
+            attachListenersEdges();
+        });
+    }
+
+    private void attachListenersEdges() {
+
+    }
+
+    private void attachListenersButtonToLoadGraph() {
+        
     }
 
     private Graph testGraph() {
@@ -52,13 +101,13 @@ public class Controller {
         return grafo;
     }
 
-    private void testGraphView(Graph graph) {
+    private void makeTheGrap(Graph graph) {
 
         //Esto es para que se genere el grafo
         SimpleWeightedGraph<Vertex, DefaultEdge> jGraphTGraph = new SimpleWeightedGraph<>(DefaultEdge.class);
 
-        for (Vertex vertexo : graph.getVertex().values()) {
-            jGraphTGraph.addVertex(vertexo);
+        for (Vertex vertexGraph : graph.getVertex().values()) {
+            jGraphTGraph.addVertex(vertexGraph);
         }
 
         for (Map.Entry<Integer, Set<Vertex>> entry : graph.getAdjacencies().entrySet()) {
@@ -67,9 +116,9 @@ public class Controller {
                 jGraphTGraph.addEdge(source, target);
             }
         }
-        Clique_Problem_Maximun test = new Clique_Problem_Maximun();
+        Clique_Problem_Maximun cliqueProblemMaximun = new Clique_Problem_Maximun();
 
-        Set<Vertex> clique = test.findCliqueMaxima(graph);
+        Set<Vertex> clique = cliqueProblemMaximun.findCliqueMaxima(graph);
         Integer pesoTotal = clique.stream().mapToInt(n -> n.getWeight()).sum();
         System.out.println("Clique de máximo peso encontrada: " + clique);
         System.out.println("Peso total: " + pesoTotal);
@@ -77,25 +126,28 @@ public class Controller {
         mxGraph mxGraph = new mxGraph();
         Object parent = mxGraph.getDefaultParent();
 
+        String vertexStyle = ";rounded=1;";
+        String edgeStyle = "edgeStyle=elbowEdgeStyle;endArrow=none;";
+
         mxGraph.getModel().beginUpdate();
         try {
             Map<Vertex, Object> vertexMap = new HashMap<>();
             for (Vertex vertexGraph : jGraphTGraph.vertexSet()) {
                 Object v = mxGraph.insertVertex(parent, null, vertexGraph.getId() + " (" + vertexGraph.getWeight() + ")", 0, 0, 50, 50,
-                        clique.contains(vertexGraph) ? "fillColor=yellow" : "fillColor=white");
+                        (clique.contains(vertexGraph) ? "fillColor=yellow" : "fillColor=white") + vertexStyle);
                 vertexMap.put(vertexGraph, v);
             }
 
             for (DefaultEdge edge : jGraphTGraph.edgeSet()) {
                 Vertex source = jGraphTGraph.getEdgeSource(edge);
                 Vertex target = jGraphTGraph.getEdgeTarget(edge);
-                mxGraph.insertEdge(parent, null, "", vertexMap.get(source), vertexMap.get(target));
-                mxGraph.insertEdge(parent, null, "", vertexMap.get(target), vertexMap.get(source));
+                mxGraph.insertEdge(parent, null, "", vertexMap.get(source), vertexMap.get(target), edgeStyle);
+                // mxGraph.insertEdge(parent, null, "", vertexMap.get(target), vertexMap.get(source));
             }
         } finally {
             mxGraph.getModel().endUpdate();
         }
-        cliqueGraphView.testGraph(mxGraph);
+        cliqueGraphView.makeTheGraph(mxGraph);
     }
 
 }
