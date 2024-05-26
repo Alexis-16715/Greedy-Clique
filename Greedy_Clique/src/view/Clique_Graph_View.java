@@ -47,14 +47,13 @@ public class Clique_Graph_View extends JPanel{
     private List<JComboBox<Integer>> listComboBoxWeight;
     private JButton generateButtonForVertexWeight;
 
+    private JPanel panelEdgesForTheUser;
     private JTextArea edgesTextArea;
     private JButton generateButtonGraph;
-
-
-    private JPanel panelEdgesForTheUser;
     private JButton generateButtonAlgorithm;
 
 
+    private mxGraphComponent graphComponent;
 
     public Clique_Graph_View(int width, int height) {
         this.width = width;
@@ -220,6 +219,7 @@ public class Clique_Graph_View extends JPanel{
 
         generateButtonAlgorithm = new JButton("Generar grafo con el Algoritmo");
         generateButtonAlgorithm.setBounds(150, 150, 225, 30);
+        generateButtonAlgorithm.setEnabled(false);
         panelEdgesForTheUser.add(generateButtonAlgorithm);
 
         revalidate();
@@ -227,8 +227,23 @@ public class Clique_Graph_View extends JPanel{
         
     }
 
+    public void prepareThePanel() {
+        if (panelGraph != null) {
+            panelGraph.removeAll();
+        }
+        if (graphComponent != null) {
+            graphComponent.removeAll();
+            graphComponent.revalidate();
+            graphComponent.repaint();
+        }
+        panelGraph.revalidate();
+        panelGraph.repaint();
+        revalidate();
+        repaint();
+    }
+
     public void makeTheGraph(mxGraph graph) {
-        mxGraphComponent graphComponent = new mxGraphComponent(graph);
+        graphComponent = new mxGraphComponent(graph);
         graphComponent.setConnectable(false); //Esto es solo para deshabilitar la opcion de crear aristas haciendo click izquierdo
         graphComponent.getViewport().setOpaque(true);
         graphComponent.getViewport().setBackground(Color.BLACK); //Esta la manera de cambiar el color del fondo, lo dejo aqui si se quiere.
@@ -242,6 +257,11 @@ public class Clique_Graph_View extends JPanel{
         layout.setY0(50); //Ajuste de la position Y para que no este tan arriba
         layout.setRadius(Math.min((width/2) -50, height) / 2); // Ajusta el radio del layout para ocupar más espacio
         layout.execute(graph.getDefaultParent());
+
+        graphComponent.refresh();
+
+        panelGraph.revalidate();
+        panelGraph.repaint();
 
         revalidate();
         repaint();
@@ -261,6 +281,18 @@ public class Clique_Graph_View extends JPanel{
 
     public JButton getGenerateButtonForVertexWeight() {
         return generateButtonForVertexWeight;
+    }
+
+    public JTextArea getEdgesTextArea() {
+        return edgesTextArea;
+    }
+
+    public JButton getGenerateButtonGraph() {
+        return generateButtonGraph;
+    }
+
+    public JButton getGenerateButtonAlgorithm() {
+        return generateButtonAlgorithm;
     }
 
 }
