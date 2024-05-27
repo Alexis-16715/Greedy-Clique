@@ -69,16 +69,17 @@ public class Controller {
     private void attachListenersButton() {
         vertexCountComboBox = cliqueGraphView.getVertexCountComboBox();
 
+        generateButtonGenerateGraphFromTXT = cliqueGraphView.getGenerateButtonGenerateGraphFromTXT();
+        generateButtonGenerateGraphAlgorithm = cliqueGraphView.getGenerateButtonGenerateGraphAlgorithm();
+
         generateButtonForVertex = cliqueGraphView.getGenerateButtonForVertex();
         generateButtonForVertex.addActionListener(e -> {
             cliqueGraphView.generateAmmountVertex(vertexCountComboBox.getSelectedIndex()+1);
+            generateButtonGenerateGraphFromTXT.setEnabled(false);
             vertexCountComboBox.setEnabled(false);
             generateButtonForVertex.setEnabled(false);
             attachListenersButtonWeights();
         });
-
-        generateButtonGenerateGraphFromTXT = cliqueGraphView.getGenerateButtonGenerateGraphFromTXT();
-        generateButtonGenerateGraphAlgorithm = cliqueGraphView.getGenerateButtonGenerateGraphAlgorithm();
 
         generateButtonGenerateGraphFromTXT.addActionListener(e -> {
             
@@ -167,36 +168,39 @@ public class Controller {
         generateButtonAlgorithm = cliqueGraphView.getGenerateButtonAlgorithm();
 
         generateButtonGraph.addActionListener(e -> {
-            // Agarra el texto
-            String edgesText = edgesTextArea.getText();
-        
-            // Lo separa por comas
-            String[] textEdge = edgesText.split(",");
-        
-            for (String edge : textEdge) {
-                // Lo separa por comas
-                String[] nodes = edge.trim().split("-");
+            try {
+                // Agarra el texto
+                String edgesText = edgesTextArea.getText();
             
-                if (nodes.length == 2) {
-                    try {
-                        Integer node1 = Integer.parseInt(nodes[0].trim());
-                        Integer node2 = Integer.parseInt(nodes[1].trim());
-                        // agrega Arista
-                        graph.addEdge(node1, node2);
-                    } catch (NumberFormatException ex) {
-                        // En caso de error lanza error
-                        System.err.println("Formato Invalido: " + edge);
+                // Lo separa por comas
+                String[] textEdge = edgesText.split(",");
+            
+                for (String edge : textEdge) {
+                    // Lo separa por comas
+                    String[] nodes = edge.trim().split("-");
+                
+                    if (nodes.length == 2) {
+                        try {
+                            Integer node1 = Integer.parseInt(nodes[0].trim());
+                            Integer node2 = Integer.parseInt(nodes[1].trim());
+                            // agrega Arista
+                            graph.addEdge(node1, node2);
+                        } catch (NumberFormatException ex) {
+                            JOptionPane.showMessageDialog(null, "Error al parsear arista: " + edge, "Error", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Formato inválido: " + edge, "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
                     }
-                } else {
-                    // En caso de error lanza error
-                    System.err.println("Formato Invalido: " + edge);
                 }
+        
+                generateButtonGraph.setEnabled(false);
+                makeMXGraph(graph);
+                generateButtonAlgorithm.setEnabled(true);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "Hubo un error al procesar las aristas", "Error", JOptionPane.ERROR_MESSAGE);
             }
-
-            generateButtonGraph.setEnabled(false);
-            makeMXGraph(graph);
-            generateButtonAlgorithm.setEnabled(true);
-
         });
 
         generateButtonAlgorithm.addActionListener(e -> {
