@@ -1,5 +1,9 @@
 ﻿package controller;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,6 +11,8 @@ import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 
 import org.jgrapht.graph.DefaultEdge;
@@ -21,6 +27,7 @@ import view.Clique_Graph_View;
 import view.Main_View;
 
 public class Controller {
+    @SuppressWarnings("unused")
     private Main_View MainView;
     private Clique_Graph_View cliqueGraphView;
     private Graph graph;
@@ -47,13 +54,16 @@ public class Controller {
     private SimpleWeightedGraph<Vertex, DefaultEdge> jGraphTGraph;
     private Object parent;
 
+
+    private JButton generateButtonGenerateGraphFromTXT;
+    private JButton generateButtonGenerateGraphAlgorithm;
+
     public Controller(Main_View MainView, Clique_Graph_View cliqueGraphView, Graph graph, Clique_Problem_Maximun cliqueProblemMaximun){
         this.MainView = MainView;
         this.cliqueGraphView = cliqueGraphView;
         this.graph = graph;
         this.cliqueProblemMaximun =cliqueProblemMaximun;
         attachListenersButton();
-        attachListenersButtonToLoadGraph();
     }
 
     private void attachListenersButton() {
@@ -66,6 +76,74 @@ public class Controller {
             generateButtonForVertex.setEnabled(false);
             attachListenersButtonWeights();
         });
+
+        generateButtonGenerateGraphFromTXT = cliqueGraphView.getGenerateButtonGenerateGraphFromTXT();
+        generateButtonGenerateGraphAlgorithm = cliqueGraphView.getGenerateButtonGenerateGraphAlgorithm();
+
+        generateButtonGenerateGraphFromTXT.addActionListener(e -> {
+            
+            generateButtonGenerateGraphAlgorithm.setEnabled(true);
+            loadGraphFromFile();
+        });
+
+        generateButtonGenerateGraphAlgorithm.addActionListener(e -> {
+            generateButtonGenerateGraphAlgorithm.setEnabled(false);
+            graphUsingClqueProblemMaximun();
+        });
+
+
+    }
+
+    private void loadGraphFromFile() {
+        JFileChooser fileChooser = new JFileChooser();
+        int result = fileChooser.showOpenDialog(null);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            parseFileAndCreateGraph(selectedFile);
+        }
+    }
+
+    private void parseFileAndCreateGraph(File file) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            // Mira los vertices
+            String verticesLine = reader.readLine();
+            if (verticesLine != null) {
+                String[] vertices = verticesLine.split(",");
+                for (String vertex : vertices) {
+                    try {
+                        String[] parts = vertex.split("\\(");
+                        int id = Integer.parseInt(parts[0].trim());
+                        int weight = Integer.parseInt(parts[1].replace(")", "").trim());
+                        graph.addVertex(id, weight);
+                    } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+                        JOptionPane.showMessageDialog(null, "Error al parsear vértice: "+ vertex,  "Para cargar vertice es 1(10),2(5)", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                }
+            }
+
+            // Mira por los aristas
+        String edgesLine = reader.readLine();
+        if (edgesLine != null) {
+            String[] edges = edgesLine.split(",");
+            for (String edge : edges) {
+                try {
+                    String[] nodes = edge.split("-");
+                    int source = Integer.parseInt(nodes[0].trim());
+                    int target = Integer.parseInt(nodes[1].trim());
+                    graph.addEdge(source, target);
+                } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+                    JOptionPane.showMessageDialog(null, "Error al parsear Arista: " + edge, "Para cargar las aristas es 1-2,2-3", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+        }
+
+            makeMXGraph(graph);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Hubo un error", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        generateButtonGenerateGraphFromTXT.setEnabled(false);
     }
 
     private void attachListenersButtonWeights() {
@@ -116,30 +194,29 @@ public class Controller {
             }
 
             generateButtonGraph.setEnabled(false);
-            makeTheGrap(graph);
+            makeMXGraph(graph);
             generateButtonAlgorithm.setEnabled(true);
 
         });
 
         generateButtonAlgorithm.addActionListener(e -> {
-            clique = cliqueProblemMaximun.findCliqueMaxima(graph);
-            Integer pesoTotal = clique.stream().mapToInt(n -> n.getWeight()).sum();
-
-            System.out.println("Clique de máximo peso encontrada: " + clique);
-            System.out.println("Peso total: " + pesoTotal);
-            cliqueGraphView.prepareThePanel();
-            makeTheGrap(graph);
-            // finalGraph();
-            
+            generateButtonAlgorithm.setEnabled(false);
+            graphUsingClqueProblemMaximun();
         });
 
     }
 
-    private void attachListenersButtonToLoadGraph() {
-        
+    private void graphUsingClqueProblemMaximun(){
+        clique = cliqueProblemMaximun.findCliqueMaxima(graph);
+        Integer pesoTotal = clique.stream().mapToInt(n -> n.getWeight()).sum();
+
+        System.out.println("Clique de máximo peso encontrada: " + clique);
+        System.out.println("Peso total: " + pesoTotal);
+        cliqueGraphView.prepareThePanel();
+        makeMXGraph(graph);
     }
 
-    private void makeTheGrap(Graph graph) {
+    private void makeMXGraph(Graph graph) {
 
         //Esto es para que se genere el grafo
         
@@ -156,12 +233,6 @@ public class Controller {
             }
         }
 
-        // clique = cliqueProblemMaximun.findCliqueMaxima(graph);
-        // Integer pesoTotal = clique.stream().mapToInt(n -> n.getWeight()).sum();
-
-        // System.out.println("Clique de máximo peso encontrada: " + clique);
-        // System.out.println("Peso total: " + pesoTotal);
-
         mxGraph = new mxGraph();
         parent = mxGraph.getDefaultParent();
 
@@ -173,7 +244,6 @@ public class Controller {
             Map<Vertex, Object> vertexMap = new HashMap<>();
             for (Vertex vertexGraph : jGraphTGraph.vertexSet()) {
                 if(clique == null){
-                    System.out.println(clique == null);
                     Object v = mxGraph.insertVertex(parent, null, vertexGraph.getId() + " (" + vertexGraph.getWeight() + ")", 0, 0, 50, 50,
                         "fillColor=white" + vertexStyle);
                     vertexMap.put(vertexGraph, v);
@@ -188,12 +258,11 @@ public class Controller {
                 Vertex source = jGraphTGraph.getEdgeSource(edge);
                 Vertex target = jGraphTGraph.getEdgeTarget(edge);
                 mxGraph.insertEdge(parent, null, "", vertexMap.get(source), vertexMap.get(target), edgeStyle);
-                // mxGraph.insertEdge(parent, null, "", vertexMap.get(target), vertexMap.get(source));
             }
         } finally {
             mxGraph.getModel().endUpdate();
         }
-        cliqueGraphView.makeTheGraph(mxGraph);
+        cliqueGraphView.makeGraph(mxGraph);
     }
 
 }

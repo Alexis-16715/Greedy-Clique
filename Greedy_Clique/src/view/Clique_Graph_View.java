@@ -55,6 +55,12 @@ public class Clique_Graph_View extends JPanel{
 
     private mxGraphComponent graphComponent;
 
+
+
+    private JPanel panelGraphFromJson;
+    private JButton generateButtonGenerateGraphFromTXT;
+    private JButton generateButtonGenerateGraphAlgorithm;
+
     public Clique_Graph_View(int width, int height) {
         this.width = width;
         this.height = height;
@@ -73,7 +79,7 @@ public class Clique_Graph_View extends JPanel{
         generatedBottonForVertex();
         // generateAmmountForTheVertex(10);
         // generateConnectionOFEdges();
-
+        generatePanelGraphJSON();
     }
 
     private void generatedPanel() {
@@ -101,7 +107,7 @@ public class Clique_Graph_View extends JPanel{
         positionPanelX = 20;
         positionPanelY = 5;
         panelGraph.setBounds(positionPanelX, positionPanelY, width/2, height-10);
-        panelGraph.setBackground(Color.DARK_GRAY);
+        panelGraph.setBackground(Color.black);
 
         add(panelGraph);
     }
@@ -199,7 +205,7 @@ public class Clique_Graph_View extends JPanel{
 
         panelEdgesForTheUser = new JPanel();
         panelEdgesForTheUser.setLayout(null);
-        panelEdgesForTheUser.setBounds(0,625,400,250);
+        panelEdgesForTheUser.setBounds(0,625,400,200);
         panelElementsLeft.add(panelEdgesForTheUser);
 
         JLabel edgesLabel = new JLabel("Aqui puede hacer las conexiones (Ejemplo: 1-2,2-3):");
@@ -242,7 +248,20 @@ public class Clique_Graph_View extends JPanel{
         repaint();
     }
 
-    public void makeTheGraph(mxGraph graph) {
+    private void generatePanelGraphJSON() {
+        panelGraphFromJson = new JPanel();
+        panelGraphFromJson.setBounds(0,850,400,35);
+        panelElementsLeft.add(panelGraphFromJson);
+
+        generateButtonGenerateGraphFromTXT = new JButton("Generar grafo desde un JSON o TXT");
+        panelGraphFromJson.add(generateButtonGenerateGraphFromTXT);
+
+        generateButtonGenerateGraphAlgorithm = new JButton("Usar el Algoritmo");
+        generateButtonGenerateGraphAlgorithm.setEnabled(false);
+        panelGraphFromJson.add(generateButtonGenerateGraphAlgorithm);
+    }
+
+    public void makeGraph(mxGraph graph) {
         graphComponent = new mxGraphComponent(graph);
         graphComponent.setConnectable(false); //Esto es solo para deshabilitar la opcion de crear aristas haciendo click izquierdo
         graphComponent.getViewport().setOpaque(true);
@@ -293,6 +312,14 @@ public class Clique_Graph_View extends JPanel{
 
     public JButton getGenerateButtonAlgorithm() {
         return generateButtonAlgorithm;
+    }
+
+    public JButton getGenerateButtonGenerateGraphFromTXT() {
+        return generateButtonGenerateGraphFromTXT;
+    }
+
+    public JButton getGenerateButtonGenerateGraphAlgorithm() {
+        return generateButtonGenerateGraphAlgorithm;
     }
 
 }

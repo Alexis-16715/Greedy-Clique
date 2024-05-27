@@ -11,6 +11,7 @@ public class Main {
         Main_View view = new Main_View();
         Graph graph = new Graph();
         Clique_Problem_Maximun cliqueProblemMaximun = new Clique_Problem_Maximun();
+        @SuppressWarnings("unused")
         Controller controller = new Controller(view, view.getCliqueGraphView(), graph, cliqueProblemMaximun);
     }
 
